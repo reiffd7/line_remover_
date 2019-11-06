@@ -38,7 +38,7 @@ class prepareDF(object):
     def featurize(self, status_quo):
         if status_quo:
             self.y = self.df['label'].to_numpy()
-            self.X = self.df.drop(columns = ['label', 'pixel_diff', 'mean_pixel_diff']).to_numpy()
+            self.X = self.df.drop(columns = ['label']).to_numpy()
             self.feature_names = self.df.drop(columns = ['label']).columns
         else:
             self.y = self.df['label'].to_numpy()
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     df = pd.read_csv(data_path, index_col=0)
 
 
-    prepare = prepareDF(df, False)
+    prepare = prepareDF(df, True)
     # prepare.test_train_split(0.33)
 
     feature_names = prepare.feature_names

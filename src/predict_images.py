@@ -10,6 +10,9 @@ import pandas as pd
 import matplotlib.cm as cm
 from scipy import ndimage, misc
 import pickle
+import modeling
+from standardizer import Standardizer
+from imageData_generator import ImageGenerator
 import os
 import sys
 this_file = os.path.realpath(__file__)
@@ -26,13 +29,15 @@ sys.path.append(ROOT_DIRECTORY)
 
 class LineScrubber(object):
 
-    def __init__(self, bin_image, gray_image, model_path, figname):
+    def __init__(self, bin_image, gray_image, whitespace, model_path, figname):
         self.bin_image = bin_image
         self.gray_image = gray_image
         self.img_rows = gray_image.shape[0]
         self.img_cols = gray_image.shape[1]
+        self.whitespace = whitespace
         self.model = pickle.load(open(model_path, 'rb'))
         self.figname = figname
+        self.scrub()
 
     def plot_frame(self, zoom, row_index, col_index, size):
         masked_window = np.random.random((zoom.shape[0],zoom.shape[1]))
@@ -70,7 +75,7 @@ class LineScrubber(object):
         ax[2].imshow(masked_pixel, cmap='prism', interpolation='none')
 
     def predict(self, gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3):
-        X = np.array([[gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3[0], last_3[1], last_3[2]]])
+        X = np.array([[gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3[0], last_3[1], last_3[2], ((self.whitespace - gray_pixel_value)/self.whitespace), ((self.whitespace - mean_pixel_value)/self.whitespace)]])
         X = X.reshape((1, -1))
         # print(X.shape)
         prediction = self.model.predict(X)
@@ -78,20 +83,25 @@ class LineScrubber(object):
 
     def alter_image(self, i, j, prediction):
         if prediction == 1:
-            self.gray_image[i+15, j+15] = 239.67 ## mean of whitespace
+            self.gray_image[i+15, j+15] = self.whitespace ## mean of whitespace
             print('pixel changed')
+
+    def save_fig(self, path):
+        plt.imsave(path, self.gray_image)
 
     def scrub(self, size=30):
         gray = self.gray_image
         binar = self.bin_image
         visit_list = np.argwhere(gray <= 225)
         last_3 = [-1, -1, -1]
+        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
         for x in visit_list:
             i = x[0]-15
             j = x[1]-15
-            self.plot_frame(gray, i, j, size)
-            self.plot_frame(binar, i, j, size)
-            plt.show()
+            print(i, j)
+            # self.plot_frame(gray, i, j, size)
+            # self.plot_frame(binar, i, j, size)
+            # plt.show()
             gray_window = gray[i:i+size, j:j+size]
             bin_window = binar[i:i+size, j:j+size]
             gray_window_sobel = ndimage.sobel(gray_window, axis=0)
@@ -101,10 +111,44 @@ class LineScrubber(object):
             above_area = np.mean(gray_window_sobel[8:16, 15])
             below_area = np.mean(gray_window_sobel[16:23, 15])
             sobel_gradient = above_area - -below_area
-            print('Pix Val: {}, Mean Pix Val: {}, Bin Colored: {}, Sobel Gradient: {}, Last 3: {}'.format(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3))
+            # print('Pix Val: {}, Mean Pix Val: {}, Bin Colored: {}, Sobel Gradient: {}, Last 3: {}'.format(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3))
             prediction = self.predict(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3)
+            print(prediction)
             self.alter_image(i, j, prediction)
             last_3.pop()
             last_3.insert(0, prediction)
-        self.save_fig(os.path.join())
+        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_after.png'.format(self.figname)))
+
+
+if __name__ == '__main__':
+    print('Loading model')
+    model_path = '../models/models/barebones.sav'
+    model = pickle.load(open(model_path, 'rb'))
+
+    print('Loading resized images')
+    resized_imgs = glob.glob('../data/medium/*')
+
+    print('Subset the images that we want, the ones we trained the model on')
+    img_list = [164, 202, 425, 345, 139, 72, 311, 363, 403, 509, 362, 257, 175, 203, 47, 183, 0, 297, 34, 8, 320, 197, 293, 450, 215, 28, 74]
+    img_subset = []
+    for img in resized_imgs:
+        img_idx = int(img.split('/')[3].split('_')[0])
+        if img_idx in img_list:
+            img_subset.append(img)
+
+    print('Standardize the images')
+    standardizer_subset = Standardizer(img_subset, resized_imgs[3])
+
+    print('Select the image we want to scrub')
+    bin_image = standardizer_subset.binarized_images[3]
+    grey_image = standardizer_subset.greyscale_image_list[3]
+    img_name = standardizer_subset.image_list[3].split('/')[3].split('.')[0]
+
+    print('Ready to scrub')
+    images = ImageGenerator(bin_image, grey_image, img_name)
+    images.pad(15, 237.4)
+    gray = images.gray_padded_image
+    binar = images.bin_padded_image
+
+    scrubber = LineScrubber(binar, gray, 237.4, '../models/models/barebones.sav', '{}_test'.format(img_name))
 
