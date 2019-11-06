@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use("tkagg")
 import matplotlib.pyplot as plt
 import glob
 from skimage import io, color, filters, feature, restoration
@@ -140,9 +142,9 @@ if __name__ == '__main__':
     standardizer_subset = Standardizer(img_subset, resized_imgs[3])
 
     print('Select the image we want to scrub')
-    bin_image = standardizer_subset.binarized_images[3]
-    grey_image = standardizer_subset.greyscale_image_list[3]
-    img_name = standardizer_subset.image_list[3].split('/')[3].split('.')[0]
+    bin_image = standardizer_subset.binarized_images[10]
+    grey_image = standardizer_subset.greyscale_image_list[10]
+    img_name = standardizer_subset.image_list[10].split('/')[3].split('.')[0]
 
     print('Ready to scrub')
     images = ImageGenerator(bin_image, grey_image, img_name)

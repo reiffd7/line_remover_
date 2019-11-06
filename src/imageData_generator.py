@@ -5,7 +5,6 @@ from skimage import io, color, filters, feature, restoration
 from skimage.transform import resize, rotate
 from skimage.color import rgb2gray
 from scipy.spatial.distance import squareform
-from transparent_imshow import transp_imshow
 import matplotlib.cm as cm
 from scipy import ndimage, misc
 import os
