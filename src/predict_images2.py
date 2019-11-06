@@ -22,7 +22,7 @@ SCRIPT_DIRECTORY = os.path.split(this_file)[0]
 ROOT_DIRECTORY = os.path.split(SCRIPT_DIRECTORY)[0]
 DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data') 
 CLASSIFICATION_DIRECTORY = os.path.join(DATA_DIRECTORY, 'classification/merged')
-RESULTS_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'results') 
+RESULTS_DIRECTORY = os.path.join(DATA_DIRECTORY, 'results') 
 MODELS_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'models/models')
 
 
@@ -89,18 +89,14 @@ class LineScrubber(object):
             print('pixel changed')
 
     def save_fig(self, path):
-<<<<<<< HEAD
-        plt.imsave(path, self.gray_image,  cmap='gray')
-=======
-        plt.imsave(path, self.gray_image, cmap = 'gray')
->>>>>>> c532026056cd892b90169c19d6f656b8ceeebaba
+        plt.imsave(path, self.gray_image)
 
     def scrub(self, size=30):
         gray = self.gray_image
         binar = self.bin_image
         visit_list = np.argwhere(gray <= (self.whitespace - 5))
         last_3 = [-1, -1, -1]
-        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
+        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)), cmap= 'gray')
         for x in visit_list:
             i = x[0]-15
             j = x[1]-15
@@ -123,7 +119,7 @@ class LineScrubber(object):
             self.alter_image(i, j, prediction)
             last_3.pop()
             last_3.insert(0, prediction)
-        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_after.png'.format(self.figname)))
+        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_after.png'.format(self.figname)), cmap='gray')
 
 
 if __name__ == '__main__':
@@ -156,5 +152,5 @@ if __name__ == '__main__':
     gray = images.gray_padded_image
     binar = images.bin_padded_image
 
-    scrubber = LineScrubber(binar, gray, 237.4, '../models/models/barebones.sav', '{}_{}_test'.format(img_name, 2))
+    scrubber = LineScrubber(binar, gray, 237.4, '../models/models/barebones.sav', '{}_test'.format(img_name))
 
