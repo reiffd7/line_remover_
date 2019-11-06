@@ -101,6 +101,9 @@ venv.bak/
 # Data 
 data/
 
+# Sketches
+Sketches/
+
 # mkdocs documentation
 /site
 
