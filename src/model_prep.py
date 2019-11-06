@@ -6,6 +6,7 @@ from modeling import Classifiers
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier, RandomForestClassifier
+import xgboost as xgb
 from sklearn.metrics import roc_curve, confusion_matrix, roc_auc_score, accuracy_score, precision_score, recall_score
 from sklearn.linear_model import LogisticRegression
 from scipy.stats import randint as sp_randint
@@ -71,18 +72,22 @@ if __name__ == '__main__':
 
     # y_train = y_train.astype(float)
     # X_train = X_train.astype(float)
-    param_dist = {"n_estimators": [10, 25, 50, 75, 100],
-              "max_depth": [3, 2, 1, None],
-              "bootstrap": [True, False],
-              "max_features": sp_randint(1, 9),
-              "min_samples_split": sp_randint(2, 11),
-              "criterion": ["gini", "entropy"]}
+    param_dist = {"booster": ["gbtree", "gblinear"],
+              "eta": np.linspace(0, 1, 9),
+              "subsample": np.linspace(0.5, 1, 5),
+              "max_depth": np.arange(3, 10),
+              "colsample_bytree": np.linspace(0.5, 1, 5),
+              "lambda": np.linspace(0, 1, 9),
+              "alpha": np.linspace(0, 1, 9),
+              "objective": ['binary:logistic'],
+              "eval_metric": ['rmse', 'mae', 'error']}
 
-    rf_best_params = {'bootstrap': False, 'criterion': 'gini', 'max_depth': None, 'max_features': 1, 'min_samples_split': 7, 'n_estimators': 75}
-    rf_model = Classifiers(RandomForestClassifier(**rf_best_params), param_dist)
-    rf_model.fit(X_train, y_train)
-    rf_model.predict(X_test)
-    print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, rf_model.y_pred), precision_score(y_test, rf_model.y_pred), recall_score(y_test, rf_model.y_pred)))
+    # rf_best_params = {'bootstrap': False, 'criterion': 'gini', 'max_depth': None, 'max_features': 1, 'min_samples_split': 7, 'n_estimators': 75}
+    xgb_best_params = {'subsample': 0.5, 'objective': 'binary:logistic', 'max_depth': 7, 'lambda': 0.125, 'eval_metric': 'error', 'eta': 0.25, 'colsample_bytree': 0.875, 'booster': 'gbtree', 'alpha': 1.0}
+    xgb_model = Classifiers(xgb.XGBClassifier(**xgb_best_params), param_dist)
+    xgb_model.fit(X_train, y_train)
+    xgb_model.predict(X_test)
+    print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, xgb_model.y_pred), precision_score(y_test, xgb_model.y_pred), recall_score(y_test, xgb_model.y_pred)))
 
     # log_model = Classifiers(LogisticRegression(), param_dist)
     # log_model.fit(X_train, y_train)
@@ -91,8 +96,8 @@ if __name__ == '__main__':
     # print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, log_model.y_pred), precision_score(y_test, log_model.y_pred), recall_score(y_test, log_model.y_pred)))
 
 
-    filename = os.path.join(MODELS_DIRECTORY, 'random_forest.sav')
-    pickle.dump(rf_model.model, open(filename, 'wb'))
+    filename = os.path.join(MODELS_DIRECTORY, 'xg_boost.sav')
+    pickle.dump(xgb_model.model, open(filename, 'wb'))
 
 
 

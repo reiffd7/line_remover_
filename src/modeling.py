@@ -8,6 +8,7 @@ import pandas as pd
 import math
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier, RandomForestClassifier
+import xgboost as xgb
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import RandomizedSearchCV, train_test_split, cross_val_score
 from sklearn.ensemble.partial_dependence import partial_dependence

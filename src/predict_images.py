@@ -130,7 +130,7 @@ class LineScrubber(object):
 
 if __name__ == '__main__':
     print('Loading model')
-    model_path = '../models/models/random_forest.sav'
+    model_path = '../models/models/xg_boost.sav'
     model = pickle.load(open(model_path, 'rb'))
 
     print('Loading resized images')
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     bin_image = standardizer_subset.binarized_images[10]
     grey_image = standardizer_subset.greyscale_image_list[10]
     img_name = standardizer_subset.image_list[10].split('/')[3].split('.')[0]
-    m_type = 'Random_Forest'
+    m_type = 'XG_Boost'
     thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
     i = 3
 
