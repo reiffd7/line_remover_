@@ -15,7 +15,7 @@ this_file = os.path.realpath(__file__)
 SCRIPT_DIRECTORY = os.path.split(this_file)[0]
 ROOT_DIRECTORY = os.path.split(SCRIPT_DIRECTORY)[0]
 DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data') 
-CLASSIFICATION_DIRECTORY = os.path.join(DATA_DIRECTORY, 'classification/merged') 
+CLASSIFICATION_DIRECTORY = os.path.join(DATA_DIRECTORY, 'classification') 
 MODELS_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'models/models')
 
 
@@ -28,17 +28,22 @@ sys.path.append(ROOT_DIRECTORY)
 
 class prepareDF(object):
 
-    def __init__(self, df):
+    def __init__(self, df, status_quo):
         self.df = df
-        self.featurize()
+        self.featurize(status_quo)
         self.test_train_split(0.25)
 
 
 
-    def featurize(self):
-        self.y = self.df['label'].to_numpy()
-        self.X = self.df.drop(columns = ['label']).to_numpy()
-        self.feature_names = self.df.drop(columns = ['label']).columns
+    def featurize(self, status_quo):
+        if status_quo:
+            self.y = self.df['label'].to_numpy()
+            self.X = self.df.drop(columns = ['label', 'pixel_diff', 'mean_pixel_diff']).to_numpy()
+            self.feature_names = self.df.drop(columns = ['label']).columns
+        else:
+            self.y = self.df['label'].to_numpy()
+            self.X = self.df.drop(columns = ['label', 'gray_pixel_value', 'mean_gray_pixel_value']).to_numpy()
+            self.feature_names = self.df.drop(columns = ['label']).columns
 
     def test_train_split(self, test_size):
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=test_size, random_state=42)
@@ -55,7 +60,7 @@ if __name__ == '__main__':
     df = pd.read_csv(data_path, index_col=0)
 
 
-    prepare = prepareDF(df)
+    prepare = prepareDF(df, False)
     # prepare.test_train_split(0.33)
 
     feature_names = prepare.feature_names
