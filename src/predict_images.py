@@ -32,8 +32,8 @@ sys.path.append(ROOT_DIRECTORY)
 class LineScrubber(object):
 
     def __init__(self, bin_image, gray_image, threshold, whitespace, model_path, figname):
-        self.bin_image = bin_image
-        self.gray_image = gray_image
+        self.bin_image = bin_image.copy()
+        self.gray_image = gray_image.copy()
         self.img_rows = gray_image.shape[0]
         self.img_cols = gray_image.shape[1]
         self.threshold = threshold
