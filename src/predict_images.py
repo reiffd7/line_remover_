@@ -89,14 +89,14 @@ class LineScrubber(object):
             print('pixel changed')
 
     def save_fig(self, path):
-        plt.imsave(path, self.gray_image)
+        plt.imsave(path, self.gray_image, cmap = 'gray')
 
     def scrub(self, size=30):
         gray = self.gray_image
         binar = self.bin_image
         visit_list = np.argwhere(gray <= (self.whitespace - 5))
         last_3 = [-1, -1, -1]
-        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)), cmap= 'gray')
+        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
         for x in visit_list:
             i = x[0]-15
             j = x[1]-15
@@ -119,7 +119,7 @@ class LineScrubber(object):
             self.alter_image(i, j, prediction)
             last_3.pop()
             last_3.insert(0, prediction)
-        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_after.png'.format(self.figname)), cmap='gray')
+        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_after.png'.format(self.figname)))
 
 
 if __name__ == '__main__':
@@ -152,5 +152,5 @@ if __name__ == '__main__':
     gray = images.gray_padded_image
     binar = images.bin_padded_image
 
-    scrubber = LineScrubber(binar, gray, 237.4, '../models/models/barebones.sav', '{}_test'.format(img_name))
+    scrubber = LineScrubber(binar, gray, 237.4, '../models/models/barebones.sav', '{}_{}_test'.format(img_name, 2))
 
