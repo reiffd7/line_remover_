@@ -107,12 +107,6 @@ Sketches/
 # mkdocs documentation
 /site
 
-# Data
-/data
-
-# Sketches
-/Sketches
-
 
 # mypy
 .mypy_cache/
