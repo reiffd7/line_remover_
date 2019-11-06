@@ -71,27 +71,28 @@ if __name__ == '__main__':
 
     # y_train = y_train.astype(float)
     # X_train = X_train.astype(float)
-    param_dist = {"loss": ['deviance', 'exponential'],
-                "learning_rate": np.linspace(0.1, 1, 10),
-            "n_estimators": [10, 25, 50, 75, 100],
-            "subsample": [0.5, 1.0],
-              "max_depth": [3, 2, None],
-              "max_features": sp_randint(1, 12),
+    param_dist = {"n_estimators": [10, 25, 50, 75, 100],
+              "max_depth": [3, 2, 1, None],
+              "bootstrap": [True, False],
+              "max_features": sp_randint(1, 9),
               "min_samples_split": sp_randint(2, 11),
-              "criterion": ["friedman_mse", "mse", "mae"]}
+              "criterion": ["gini", "entropy"]}
 
-    # rf_model = Classifiers(RandomForestClassifier(), param_dist)
-    # rf_model.best_parameters(X_train, y_train)
+    rf_best_params = {'bootstrap': False, 'criterion': 'gini', 'max_depth': None, 'max_features': 1, 'min_samples_split': 7, 'n_estimators': 75}
+    rf_model = Classifiers(RandomForestClassifier(**rf_best_params), param_dist)
+    rf_model.fit(X_train, y_train)
+    rf_model.predict(X_test)
+    print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, rf_model.y_pred), precision_score(y_test, rf_model.y_pred), recall_score(y_test, rf_model.y_pred)))
 
-    log_model = Classifiers(LogisticRegression(), param_dist)
-    log_model.fit(X_train, y_train)
+    # log_model = Classifiers(LogisticRegression(), param_dist)
+    # log_model.fit(X_train, y_train)
 
-    log_model.predict(X_test)
-    print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, log_model.y_pred), precision_score(y_test, log_model.y_pred), recall_score(y_test, log_model.y_pred)))
+    # log_model.predict(X_test)
+    # print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, log_model.y_pred), precision_score(y_test, log_model.y_pred), recall_score(y_test, log_model.y_pred)))
 
 
-    filename = os.path.join(MODELS_DIRECTORY, 'barebones.sav')
-    pickle.dump(log_model.model, open(filename, 'wb'))
+    filename = os.path.join(MODELS_DIRECTORY, 'random_forest.sav')
+    pickle.dump(rf_model.model, open(filename, 'wb'))
 
 
 
