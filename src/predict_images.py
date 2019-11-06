@@ -12,9 +12,9 @@ import pandas as pd
 import matplotlib.cm as cm
 from scipy import ndimage, misc
 import pickle
-import modeling
-from standardizer import Standardizer
-from imageData_generator import ImageGenerator
+import src.modeling
+from src.standardizer import Standardizer
+from src.imageData_generator import ImageGenerator
 import os
 import sys
 this_file = os.path.realpath(__file__)
@@ -31,11 +31,12 @@ sys.path.append(ROOT_DIRECTORY)
 
 class LineScrubber(object):
 
-    def __init__(self, bin_image, gray_image, whitespace, model_path, figname):
+    def __init__(self, bin_image, gray_image, threshold, whitespace, model_path, figname):
         self.bin_image = bin_image
         self.gray_image = gray_image
         self.img_rows = gray_image.shape[0]
         self.img_cols = gray_image.shape[1]
+        self.threshold = threshold
         self.whitespace = whitespace
         self.model = pickle.load(open(model_path, 'rb'))
         self.figname = figname
@@ -80,8 +81,13 @@ class LineScrubber(object):
         X = np.array([[gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3[0], last_3[1], last_3[2], ((self.whitespace - gray_pixel_value)/self.whitespace), ((self.whitespace - mean_pixel_value)/self.whitespace)]])
         X = X.reshape((1, -1))
         # print(X.shape)
-        prediction = self.model.predict(X)
-        return prediction[0]
+        prob = self.model.predict_proba(X)[0][1]
+        print(prob)
+        if prob >= self.threshold:
+            prediction = 1
+        else:
+            prediction = 0
+        return prediction
 
     def alter_image(self, i, j, prediction):
         if prediction == 1:
@@ -89,18 +95,14 @@ class LineScrubber(object):
             print('pixel changed')
 
     def save_fig(self, path):
-<<<<<<< HEAD
         plt.imsave(path, self.gray_image,  cmap='gray')
-=======
-        plt.imsave(path, self.gray_image, cmap = 'gray')
->>>>>>> c532026056cd892b90169c19d6f656b8ceeebaba
 
     def scrub(self, size=30):
         gray = self.gray_image
         binar = self.bin_image
         visit_list = np.argwhere(gray <= (self.whitespace - 5))
         last_3 = [-1, -1, -1]
-        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
+        # self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
         for x in visit_list:
             i = x[0]-15
             j = x[1]-15
@@ -123,7 +125,7 @@ class LineScrubber(object):
             self.alter_image(i, j, prediction)
             last_3.pop()
             last_3.insert(0, prediction)
-        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_after.png'.format(self.figname)))
+        # self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_after.png'.format(self.figname)))
 
 
 if __name__ == '__main__':
@@ -149,6 +151,9 @@ if __name__ == '__main__':
     bin_image = standardizer_subset.binarized_images[10]
     grey_image = standardizer_subset.greyscale_image_list[10]
     img_name = standardizer_subset.image_list[10].split('/')[3].split('.')[0]
+    m_type = 'Logistic_Regression'
+    thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+    i = 3
 
     print('Ready to scrub')
     images = ImageGenerator(bin_image, grey_image, img_name)
@@ -156,5 +161,6 @@ if __name__ == '__main__':
     gray = images.gray_padded_image
     binar = images.bin_padded_image
 
-    scrubber = LineScrubber(binar, gray, 237.4, '../models/models/barebones.sav', '{}_{}_test'.format(img_name, 2))
+    for thresh in thresholds:
+        scrubber = LineScrubber(binar, gray, thresh, 237.4, '../models/models/barebones.sav', '{}_{}_{}_{}_test'.format(img_name, m_type, i, thresh))
 
