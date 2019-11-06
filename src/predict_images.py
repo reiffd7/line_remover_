@@ -12,9 +12,9 @@ import pandas as pd
 import matplotlib.cm as cm
 from scipy import ndimage, misc
 import pickle
-import src.modeling
-from src.standardizer import Standardizer
-from src.imageData_generator import ImageGenerator
+import modeling
+from standardizer import Standardizer
+from imageData_generator import ImageGenerator
 import os
 import sys
 this_file = os.path.realpath(__file__)
