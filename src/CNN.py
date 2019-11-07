@@ -104,19 +104,19 @@ class imageCNN(object):
                                 name='Convolution-2',
                                 activation=self.activation))
         self.model.add(Conv2D(self.nb_filters, (4, 4), padding='valid',
-                                name='Convolution-2',
+                                name='Convolution-3',
                                 activation=self.activation))
         self.model.add(MaxPooling2D(pool_size=(4, 4),
                                     name='Pooling-1'))
 
         self.model.add(Conv2D(self.nb_filters, (2, 2), padding='valid',
-                                name='Convolution-3',
+                                name='Convolution-5',
                                 activation=self.activation))
         self.model.add(Conv2D(self.nb_filters, (2, 2), padding='valid',
-                                name='Convolution-4',
+                                name='Convolution-6',
                                 activation=self.activation))
         self.model.add(Conv2D(self.nb_filters, (2, 2), padding='valid',
-                                name='Convolution-4',
+                                name='Convolution-7',
                                 activation=self.activation))
         self.model.add(MaxPooling2D(pool_size=(2, 2),
                                     name='Pooling-2'))
