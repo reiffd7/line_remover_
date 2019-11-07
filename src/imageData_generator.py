@@ -13,10 +13,14 @@ this_file = os.path.realpath(__file__)
 SCRIPT_DIRECTORY = os.path.split(this_file)[0]
 ROOT_DIRECTORY = os.path.split(SCRIPT_DIRECTORY)[0]
 DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data') 
-RESIZED_IMAGES_DIRECTORY = os.path.join(DATA_DIRECTORY, 'medium')
-BINARY_DIRECTORY = os.path.join(DATA_DIRECTORY, 'binar')
-GRAYSCALE_DIRECTORY = os.path.join(DATA_DIRECTORY, 'gray')
+# RESIZED_IMAGES_DIRECTORY = os.path.join(DATA_DIRECTORY, 'medium')
+# BINARY_DIRECTORY = os.path.join(DATA_DIRECTORY, 'binar')
+# GRAYSCALE_DIRECTORY = os.path.join(DATA_DIRECTORY, 'gray')
 CLASSIFICATION_DIRECTORY = os.path.join(DATA_DIRECTORY, 'classification')
+DOCUMENTS = os.path.split(ROOT_DIRECTORY)[0]
+DATA_STASH = os.path.join(DOCUMENTS, 'line_remover_2_data_stash')
+GRAY_STASH = os.path.join(DATA_STASH, 'gray')
+BINARY_STASH = os.path.join(DATA_STASH, 'binar')
 sys.path.append(ROOT_DIRECTORY)
 
 
@@ -90,10 +94,10 @@ class ImageGenerator(object):
         self.my_dict['label'].append(label)
 
     def save_imgs(self, label, gray, binary, row_idx, col_idx):
-        binary_lines_path = os.path.join(BINARY_DIRECTORY, 'all/lines')
-        binary_drawings_path = os.path.join(BINARY_DIRECTORY, 'all/drawings')
-        gray_lines_path = os.path.join(GRAYSCALE_DIRECTORY, 'all/lines')
-        gray_drawings_path = os.path.join(GRAYSCALE_DIRECTORY, 'all/drawings')
+        binary_lines_path = os.path.join(BINARY_STASH, 'all/lines')
+        binary_drawings_path = os.path.join(BINARY_STASH, 'all/drawings')
+        gray_lines_path = os.path.join(GRAY_STASH, 'all/lines')
+        gray_drawings_path = os.path.join(GRAY_STASH, 'all/drawings')
         if label == 1:
             plt.imsave(os.path.join(binary_lines_path, '{}_{}_{}.png'.format(self.name, row_idx, col_idx)), binary, cmap='gray')
             plt.imsave(os.path.join(gray_lines_path, '{}_{}_{}.png'.format(self.name, row_idx, col_idx)), gray, cmap='gray')
@@ -119,28 +123,29 @@ class ImageGenerator(object):
     def gen_data(self, row, size=30):
         gray = self.gray_padded_image
         binar = self.bin_padded_image
-        row_idx = row
         self.my_dict = {'gray_pixel_value': [], 'mean_gray_pixel_value': [], 'bin_percentage_colored': [], 'sobel_gradient': [], 'label': []}
-        for i in range(400):
-            col_idx = i
-            self.plot_frame(gray, row_idx, col_idx, size)
-            self.plot_frame(binar, row_idx, col_idx, size)
-            plt.show()
-            gray_window = self.gray_padded_image[row_idx:row_idx+size, col_idx:col_idx+size]
-            bin_window = self.bin_padded_image[row_idx:row_idx+size, col_idx:col_idx+size]
-            gray_pixel_value = gray_window[15, 15]
-            bin_pixel_value = bin_window[15, 15]
-            mean_pixel_value = np.mean(gray_window)
-            gray_window_sobel = ndimage.sobel(gray_window, axis=0)
-            colored_percentage = np.count_nonzero(bin_window==0)/(30**2)
-            above_area = np.mean(gray_window_sobel[8:16, 15])
-            below_area = np.mean(gray_window_sobel[16:23, 15])
-            sobel_gradient = above_area - -below_area
-            if bin_pixel_value == 0.0:
-                label = self.get_label()
-                self.update_dict(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, label)
-                self.save_imgs(label, gray_window, bin_window, row_idx, col_idx)
-                print(label)
+        for r in range(30, 220):
+            row_idx = r
+            for c in range(230, 255):
+                col_idx = c
+                self.plot_frame(gray, row_idx, col_idx, size)
+                self.plot_frame(binar, row_idx, col_idx, size)
+                plt.show()
+                gray_window = self.gray_padded_image[row_idx:row_idx+size, col_idx:col_idx+size]
+                bin_window = self.bin_padded_image[row_idx:row_idx+size, col_idx:col_idx+size]
+                gray_pixel_value = gray_window[15, 15]
+                bin_pixel_value = bin_window[15, 15]
+                mean_pixel_value = np.mean(gray_window)
+                gray_window_sobel = ndimage.sobel(gray_window, axis=0)
+                colored_percentage = np.count_nonzero(bin_window==0)/(30**2)
+                above_area = np.mean(gray_window_sobel[8:16, 15])
+                below_area = np.mean(gray_window_sobel[16:23, 15])
+                sobel_gradient = above_area - -below_area
+                if bin_pixel_value == 0.0:
+                    label = self.get_label()
+                    self.update_dict(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, label)
+                    self.save_imgs(label, gray_window, bin_window, row_idx, col_idx)
+                    print(label)
 
 
         self.df = pd.DataFrame.from_dict(self.my_dict)
