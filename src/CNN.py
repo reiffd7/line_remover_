@@ -103,11 +103,17 @@ class imageCNN(object):
         self.model.add(Conv2D(self.nb_filters, (4, 4), padding='valid',
                                 name='Convolution-2',
                                 activation=self.activation))
+        self.model.add(Conv2D(self.nb_filters, (4, 4), padding='valid',
+                                name='Convolution-2',
+                                activation=self.activation))
         self.model.add(MaxPooling2D(pool_size=(4, 4),
                                     name='Pooling-1'))
 
         self.model.add(Conv2D(self.nb_filters, (2, 2), padding='valid',
                                 name='Convolution-3',
+                                activation=self.activation))
+        self.model.add(Conv2D(self.nb_filters, (2, 2), padding='valid',
+                                name='Convolution-4',
                                 activation=self.activation))
         self.model.add(Conv2D(self.nb_filters, (2, 2), padding='valid',
                                 name='Convolution-4',
@@ -214,9 +220,10 @@ if __name__ == '__main__':
     num_filters = int(input("Enter number of filters:  "))
     neurons = int(input("Enter number of neurons: "))
     activation = input("Enter activation function: ")
+    layers = 3
 
 
-    model_name = 'CNN_E{}_Batch{}_Filters{}_Neurons{}_Act{}'.format(epochs, batch_size, num_filters, neurons, activation)
+    model_name = 'CNN_E{}_Batch{}_Filters{}_Neurons{}_Act{}_Layers_{}'.format(epochs, batch_size, num_filters, neurons, activation, layers)
 
     cnn = imageCNN(train_path, test_path, holdout_path, model_name)
 
