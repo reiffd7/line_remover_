@@ -139,4 +139,4 @@ if __name__ == '__main__':
     gray = images.gray_padded_image
 
     
-    scrubber = LineScrubber(gray, 0.5, 237.4, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E100_Batch10_Filters64_Neurons64_Actrelu_Layers_3.h5', 0.5))
+    scrubber = LineScrubber(gray, 0.55, 237.4, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E100_Batch10_Filters64_Neurons64_Actrelu_Layers_3.h5', 0.55))
