@@ -3,8 +3,8 @@ from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 import numpy as np
 from CNN import imageCNN
-from standardizer import standardizer
-from image_shear import shear_single
+from standardizer import Standardizer
+from imageData_generator import ImageGenerator
 import glob
 import os
 import sys
@@ -68,15 +68,15 @@ class LineScrubber(object):
 
     def predict(self, gray_window):
         X = gray_window
-        X = X.resahpe(-1, 30, 30, 1)
+        X = X.reshape(-1, 30, 30, 1)
         # print(X.shape)
-        # prob = self.model.predict_proba(X)[0][1]
-        # print(prob)
-        # if prob >= self.threshold:
-        #     prediction = 1
-        # else:
-        #     prediction = 0
-        predict = self.model.predict(X)[0][0]
+        prob = self.model.predict(X)[0][0]
+        print(prob)
+        if prob >= self.threshold:
+            prediction = 1
+        else:
+            prediction = 0
+        
         return prediction
 
     def alter_image(self, i, j, prediction):
@@ -124,19 +124,19 @@ if __name__ == '__main__':
     standardizer_subset = Standardizer(img_subset, resized_imgs[3])
 
     print('Select the image we want to scrub')
-    bin_image = standardizer_subset.binarized_images[3]
-    grey_image = standardizer_subset.greyscale_image_list[3]
-    img_name = standardizer_subset.image_list[3].split('/')[3].split('.')[0]
+    bin_image = standardizer_subset.binarized_images[10]
+    grey_image = standardizer_subset.greyscale_image_list[10]
+    img_name = standardizer_subset.image_list[10].split('/')[3].split('.')[0]
     print(img_name)
 
-    # m_type = 'CNN'
-    # thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-    # i = 3
+    m_type = 'CNN'
+    thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+    i = 3
 
-    # print('Ready to scrub')
-    # images = ImageGenerator(bin_image, grey_image, img_name)
-    # images.pad(15, 237.4)
-    # gray = images.gray_padded_image
+    print('Ready to scrub')
+    images = ImageGenerator(bin_image, grey_image, img_name)
+    images.pad(15, 237.4)
+    gray = images.gray_padded_image
 
     
-    # scrubber = LineScrubber(gray, 0.55, 237.4, model_path, '{}_{}_test'.format(img_name, 'CNN_E25_Batch32_Filters64_Neurons64_Acttanh'))
+    scrubber = LineScrubber(gray, 0.55, 237.4, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E25_Batch32_Filters64_Neurons64_Acttanh', 0.55))
