@@ -16,7 +16,9 @@ import sys
 this_file = os .path.realpath(__file__)
 SCRIPT_DIRECTORY = os.path.split(this_file)[0]
 ROOT_DIRECTORY = os.path.split(SCRIPT_DIRECTORY)[0]
-MODEL_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'models')  
+GRAY_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data/gray')  
+BINARY_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data/binar')
+MODEL_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'models')
 sys.path.append(ROOT_DIRECTORY)
 
 
@@ -42,14 +44,12 @@ class imageCNN(object):
         self.nb_classes = sum(len(dirnames) for _, dirnames, _ in os.walk(self.train_path))
 
 
-    def param_init(self, epochs, batch_size, image_size, base_filters, final_layer_neurons, kernel_size, pool_size, activation):
+    def param_init(self, epochs, batch_size, image_size, base_filters, final_layer_neurons, activation):
         self.epochs = epochs
         self.batch_size = batch_size
         self.image_size = image_size
         self.nb_filters = base_filters
         self.neurons = final_layer_neurons
-        self.kernel_size = (kernel_size[0], kernel_size[1])
-        self.pool_size = (pool_size[0], pool_size[1])
         self.activation = activation
 
 
@@ -66,6 +66,7 @@ class imageCNN(object):
                         self.train_path,
                         target_size=(30, 30),
                         batch_size=self.batch_size,
+                        color_mode='grayscale',
                         class_mode='binary',
                         shuffle=True)
         
@@ -73,6 +74,7 @@ class imageCNN(object):
                         self.test_path,
                         target_size=(30, 30),
                         batch_size=self.batch_size,
+                        color_mode='grayscale',
                         class_mode='binary',
                         shuffle=False)
 
@@ -80,6 +82,7 @@ class imageCNN(object):
                         self.holdout_path,
                         target_size=(30, 30),
                         batch_size=self.batch_size,
+                        color_mode='grayscale',
                         class_mode='binary',
                         shuffle=False)
 
@@ -92,29 +95,28 @@ class imageCNN(object):
         sigmoid activation function to makde a prediction.
         '''
         self.model = Sequential()
-        self.model.add(Conv2D(self.nb_filters, (4, 4), input_shape=(30, 30, 3),
-                                Bding='valid',
+        self.model.add(Conv2D(self.nb_filters, (4, 4), input_shape=(30, 30, 1),
                                 name='Convolution-1',
-                                activation='relu'))
+                                activation=self.activation))
         self.model.add(Conv2D(self.nb_filters, (4, 4), padding='valid',
                                 name='Convolution-2',
-                                activation='relu'))
+                                activation=self.activation))
         self.model.add(MaxPooling2D(pool_size=(4, 4),
                                     name='Pooling-1'))
 
         self.model.add(Conv2D(self.nb_filters, (2, 2), padding='valid',
                                 name='Convolution-3',
-                                activation='relu'))
+                                activation=self.activation))
         self.model.add(Conv2D(self.nb_filters, (2, 2), padding='valid',
                                 name='Convolution-4',
-                                activation='relu'))
+                                activation=self.activation))
         self.model.add(MaxPooling2D(pool_size=(2, 2),
                                     name='Pooling-2'))
 
         self.model.add(Flatten())
         self.model.add(Dense(self.neurons,
                                 name='Dense-1',
-                                activation='relu'))
+                                activation=self.activation))
         self.model.add(Dropout(0.25))
         self.model.add(Dense(1,
                                 name='Dense-2',
@@ -170,7 +172,7 @@ class imageCNN(object):
 
     def save_model(self):
         # Save model and weights
-        model_path = hist_path = os.path.join(MODEL_DIRECTORY, 'model_names/{}.h5'.format(self.model_name))
+        model_path = hist_path = os.path.join(MODEL_DIRECTORY, 'models/{}.h5'.format(self.model_name))
         self.model.save(model_path)
         print("Saved model to \"" + model_path + "\"")
 
@@ -198,25 +200,25 @@ if __name__ == '__main__':
     # train_drawings = glob.glob('../data/output/train/drawings/*')
 
 
-    train_path = os.path.join(ROOT_DIRECTORY, 'data/output/train')  
-    test_path = os.path.join(ROOT_DIRECTORY, 'data/output/test')
-    holdout_path = os.path.join(ROOT_DIRECTORY, 'data/output/val')  
+    train_path = os.path.join(GRAY_DIRECTORY, 'split/train')  
+    test_path = os.path.join(GRAY_DIRECTORY, 'split/test')
+    holdout_path = os.path.join(GRAY_DIRECTORY, 'split/val')  
 
     print('Creating class')
 
-    model_name = input("Enter model name: ")
-
-    cnn = imageCNN(train_path, test_path, holdout_path, model_name)
 
     epochs = int(input("Enter epochs:  "))
     batch_size = int(input("Enter batch size: "))
     num_filters = int(input("Enter number of filters:  "))
     neurons = int(input("Enter number of neurons: "))
-    kernel_size = tuple([eval(x) for x in input("Enter kernel size: ").split(',')])
-    pool_size = tuple([eval(x) for x in input("Enter pool size: ").split(',')])
     activation = input("Enter activation function: ")
 
-    print(kernel_size[0])
+
+    model_name = 'CNN_E{}_Batch{}_Filters{}_Neurons{}_Act{}'.format(epochs, batch_size, num_filters, neurons, activation)
+
+    cnn = imageCNN(train_path, test_path, holdout_path, model_name)
+
+    
 
     print("Initializing Parameters")
     cnn.param_init(
@@ -225,8 +227,6 @@ if __name__ == '__main__':
         image_size=(30, 30), 
         base_filters=num_filters, 
         final_layer_neurons=neurons,
-        kernel_size=kernel_size,
-        pool_size = pool_size,
         activation = activation)
 
 
