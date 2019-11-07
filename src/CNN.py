@@ -13,11 +13,13 @@ import numpy as np
 import glob
 import os
 import sys
+from PIL import Image
+sys.modules['Image'] = Image
 this_file = os .path.realpath(__file__)
 SCRIPT_DIRECTORY = os.path.split(this_file)[0]
 ROOT_DIRECTORY = os.path.split(SCRIPT_DIRECTORY)[0]
 GRAY_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data/gray')  
-BINARY_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data/binar')
+# BINARY_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data/binar')
 MODEL_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'models')
 sys.path.append(ROOT_DIRECTORY)
 
