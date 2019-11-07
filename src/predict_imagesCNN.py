@@ -107,7 +107,7 @@ class LineScrubber(object):
 
 if __name__ == '__main__':
     print('Loading model')
-    model_path = '../models/models/CNN_E25_Batch32_Filters64_Neurons64_Acttanh.h5'
+    model_path = '../models/models/CNN_E100_Batch10_Filters64_Neurons64_Actrelu_Layers_3.h5'
 
     print('Loading resized images')
     resized_imgs = glob.glob('../data/medium/*')
@@ -139,4 +139,4 @@ if __name__ == '__main__':
     gray = images.gray_padded_image
 
     
-    scrubber = LineScrubber(gray, 0.4, 237.4, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E25_Batch32_Filters64_Neurons64_Acttanh', 0.4))
+    scrubber = LineScrubber(gray, 0.5, 237.4, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E100_Batch10_Filters64_Neurons64_Actrelu_Layers_3.h5', 0.5))
