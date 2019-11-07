@@ -148,9 +148,9 @@ if __name__ == '__main__':
     standardizer_subset = Standardizer(img_subset, resized_imgs[3])
 
     print('Select the image we want to scrub')
-    bin_image = standardizer_subset.binarized_images[10]
-    grey_image = standardizer_subset.greyscale_image_list[10]
-    img_name = standardizer_subset.image_list[10].split('/')[3].split('.')[0]
+    bin_image = standardizer_subset.binarized_images[3]
+    grey_image = standardizer_subset.greyscale_image_list[3]
+    img_name = standardizer_subset.image_list[3].split('/')[3].split('.')[0]
     m_type = 'XG_Boost'
     thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
     i = 3
@@ -161,6 +161,6 @@ if __name__ == '__main__':
     gray = images.gray_padded_image
     binar = images.bin_padded_image
 
-    for thresh in thresholds:
-        scrubber = LineScrubber(binar, gray, thresh, 237.4, '../models/models/barebones.sav', '{}_{}_{}_{}_test'.format(img_name, m_type, i, thresh))
+    
+    scrubber = LineScrubber(binar, gray, 0.55, 237.4, '../models/models/barebones.sav', '{}_{}_{}_{}_test'.format(img_name, m_type, i, 0.55))
 
