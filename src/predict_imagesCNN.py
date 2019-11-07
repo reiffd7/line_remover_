@@ -130,7 +130,7 @@ if __name__ == '__main__':
     print(img_name)
 
     m_type = 'CNN'
-    thresholds = [0.6, 0.65, 0.7, 0.75]
+    
     i = 3
 
     print('Ready to scrub')
@@ -138,5 +138,6 @@ if __name__ == '__main__':
     images.pad(15, 237.4)
     gray = images.gray_padded_image
 
-    
-    scrubber = LineScrubber(gray, 0.55, 219.9, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E100_Batch10_Filters64_Neurons64_Actrelu_Layers_3.h5', 0.55))
+    thresholds = [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
+    for thresh in thresholds:
+        scrubber = LineScrubber(gray, thresh, 219.9, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E100_Batch10_Filters64_Neurons64_Actrelu_Layers_3.h5', thresh))
