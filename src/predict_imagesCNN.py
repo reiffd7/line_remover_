@@ -124,9 +124,9 @@ if __name__ == '__main__':
     standardizer_subset = Standardizer(img_subset, resized_imgs[3])
 
     print('Select the image we want to scrub')
-    bin_image = standardizer_subset.binarized_images[8]
-    grey_image = standardizer_subset.greyscale_image_list[8]
-    img_name = standardizer_subset.image_list[8].split('/')[3].split('.')[0]
+    bin_image = standardizer_subset.binarized_images[6]
+    grey_image = standardizer_subset.greyscale_image_list[6]
+    img_name = standardizer_subset.image_list[6].split('/')[3].split('.')[0]
     print(img_name)
 
     m_type = 'CNN'
@@ -139,5 +139,5 @@ if __name__ == '__main__':
     gray = images.gray_padded_image
 
     thresholds = [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9]
-    for thresh in thresholds:
-        scrubber = LineScrubber(gray, thresh, 219.9, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E100_Batch10_Filters64_Neurons64_Actrelu_Layers_3.h5', thresh))
+    
+    scrubber = LineScrubber(gray, 0.55, 202.0, model_path, '{}_{}_{}_test'.format(img_name, 'CNN_E100_Batch10_Filters64_Neurons64_Actrelu_Layers_3.h5', 0.55))
