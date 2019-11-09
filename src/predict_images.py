@@ -12,9 +12,9 @@ import pandas as pd
 import matplotlib.cm as cm
 from scipy import ndimage, misc
 import pickle
-import modeling
-from standardizer import Standardizer
-from imageData_generator import ImageGenerator
+# import modeling
+# from standardizer import Standardizer
+# from imageData_generator import ImageGenerator
 import os
 import sys
 this_file = os.path.realpath(__file__)
@@ -78,7 +78,9 @@ class LineScrubber(object):
         ax[2].imshow(masked_pixel, cmap='prism', interpolation='none')
 
     def predict(self, gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3):
-        X = np.array([[gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3[0], last_3[1], last_3[2], ((self.whitespace - gray_pixel_value)/self.whitespace), ((self.whitespace - mean_pixel_value)/self.whitespace)]])
+        normalized_pixel_val = ((self.whitespace - gray_pixel_value)/self.whitespace)
+        normalized_mean_pixel_val = ((self.whitespace - mean_pixel_value)/self.whitespace)
+        X = np.array([[gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3[0], last_3[1], last_3[2], normalized_pixel_val, normalized_mean_pixel_val]])
         X = X.reshape((1, -1))
         # print(X.shape)
         prob = self.model.predict_proba(X)[0][1]
@@ -94,15 +96,15 @@ class LineScrubber(object):
             self.gray_image[i+15, j+15] = self.whitespace ## mean of whitespace
             print('pixel changed')
 
-    def save_fig(self, path):
-        plt.imsave(path, self.gray_image,  cmap='gray')
+    def save_fig(self):
+        plt.imsave(self.figname, self.gray_image,  cmap='gray')
 
     def scrub(self, size=30):
         gray = self.gray_image
         binar = self.bin_image
-        visit_list = np.argwhere(gray <= (self.whitespace - 5))
+        visit_list = np.argwhere(gray <= (self.whitespace - 20))
         last_3 = [-1, -1, -1]
-        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
+        # self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
         for x in visit_list:
             i = x[0]-15
             j = x[1]-15
@@ -125,13 +127,13 @@ class LineScrubber(object):
             self.alter_image(i, j, prediction)
             last_3.pop()
             last_3.insert(0, prediction)
-        self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_after.png'.format(self.figname)))
+        self.save_fig()
 
 
 if __name__ == '__main__':
     print('Loading model')
     model_path = '../models/models/xg_boost.sav'
-    model = pickle.load(open(model_path, 'rb'))
+    # model = pickle.load(open(model_path, 'rb'))
 
     print('Loading resized images')
     resized_imgs = glob.glob('../data/medium/*')
@@ -151,9 +153,9 @@ if __name__ == '__main__':
     bin_image = standardizer_subset.binarized_images[3]
     grey_image = standardizer_subset.greyscale_image_list[3]
     img_name = standardizer_subset.image_list[3].split('/')[3].split('.')[0]
-    m_type = 'XG_Boost'
+    m_name = 'XG_Boost'
     thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-    i = 3
+
 
     print('Ready to scrub')
     images = ImageGenerator(bin_image, grey_image, img_name)
@@ -162,5 +164,5 @@ if __name__ == '__main__':
     binar = images.bin_padded_image
 
     
-    scrubber = LineScrubber(binar, gray, 0.55, 237.4, '../models/models/barebones.sav', '{}_{}_{}_{}_test'.format(img_name, m_type, i, 0.55))
+    scrubber = LineScrubber(binar, gray, 0.55, 237.4, model_path, '{}_{}_{}_test'.format(img_name, m_name, 0.55))
 

@@ -20,12 +20,15 @@ class Standardizer(object):
     images as we want in a grid
     '''
 
-    def __init__(self, image_list, image):
+    def __init__(self,  image, image_list=None):
         self.image_list = image_list
         self.image = image
-        self.greyscale(400)
-        self.standardize()
-        self.binarize(0.85)
+        # self.greyscale(400)
+        # self.standardize()
+        # self.binarize(0.85)
+        self.greyscale_one()
+        self.standardize_one()
+        self.binarize_one(0.85)
 
 
     def greyscale(self, n):

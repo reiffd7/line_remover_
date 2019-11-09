@@ -1,0 +1,14 @@
+
+<html>
+<body>
+
+<form action="/predict" method='POST'>
+    {% for i in range(n)%}
+    Article:<br>
+    <input type="text" name="article1"> 
+    {%endfor%}
+    <br>
+    <input type="submit" value="Submit for class prediction">
+</form>
+</body>
+</html>

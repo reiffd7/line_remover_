@@ -43,8 +43,8 @@ class prepareDF(object):
             self.feature_names = self.df.drop(columns = ['label']).columns
         else:
             self.y = self.df['label'].to_numpy()
-            self.X = self.df.drop(columns = ['label', 'gray_pixel_value', 'mean_gray_pixel_value']).to_numpy()
-            self.feature_names = self.df.drop(columns = ['label']).columns
+            self.X = self.df.drop(columns = ['label', 'bin_percentage_colored']).to_numpy()
+            self.feature_names = self.df.drop(columns = ['label', 'bin_percentage_colored']).columns
 
     def test_train_split(self, test_size):
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=test_size, random_state=42)
@@ -61,12 +61,12 @@ if __name__ == '__main__':
     df = pd.read_csv(data_path, index_col=0)
 
 
-    prepare = prepareDF(df, True)
+    prepare = prepareDF(df, False)
     # prepare.test_train_split(0.33)
 
     feature_names = prepare.feature_names
     X_train, X_test, y_train, y_test = prepare.X_train, prepare.X_test, prepare.y_train, prepare.y_test
-
+    print(feature_names)
     print('Done preparing. About to run models ...')
     ## Run Models
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     # print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, log_model.y_pred), precision_score(y_test, log_model.y_pred), recall_score(y_test, log_model.y_pred)))
 
 
-    filename = os.path.join(MODELS_DIRECTORY, 'xg_boost.sav')
+    filename = os.path.join(MODELS_DIRECTORY, 'xg_boost_no_bincolored.sav')
     pickle.dump(xgb_model.model, open(filename, 'wb'))
 
 

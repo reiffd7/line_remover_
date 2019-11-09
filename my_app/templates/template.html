@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Hello from Flask</title>
+{% if filename %}
+  <h1>     Here is your resized image, ready for line scrubbing! </h1>
+  <h1> <img src="{{ url_for('send_file', filename=filename) }}"></h1>
+{% else %}
+  <h1>no image for whatever reason</h1>
+{% endif %}
+
+<form action="/predict" method ='POST'>
+    <input type="range" name ="whitespace" min="200" max="255" value="228" class="slider" id="myRange">
+    <p>Value: <span id="demo"></span></p>
+    <input type="submit" value = "Srub"/>
+</form>
+
+
+
+<script>
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+    output.innerHTML = slider.value;
+    
+    slider.oninput = function() {
+      output.innerHTML = this.value;
+    }
+</script>
