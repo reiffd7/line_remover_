@@ -223,7 +223,7 @@ if __name__ == '__main__':
     layers = 3
 
 
-    model_name = 'CNN_E{}_Batch{}_Filters{}_Neurons{}_Act{}_Layers_{}'.format(epochs, batch_size, num_filters, neurons, activation, layers)
+    model_name = 'moredata_CNN_E{}_Batch{}_Filters{}_Neurons{}_Act{}_Layers_{}'.format(epochs, batch_size, num_filters, neurons, activation, layers)
 
     cnn = imageCNN(train_path, test_path, holdout_path, model_name)
 
