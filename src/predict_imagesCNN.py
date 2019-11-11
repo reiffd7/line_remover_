@@ -124,9 +124,9 @@ if __name__ == '__main__':
     standardizer_subset = Standardizer(img_subset, resized_imgs[3])
 
     print('Select the image we want to scrub')
-    bin_image = standardizer_subset.binarized_images[7]
-    grey_image = standardizer_subset.greyscale_image_list[7]
-    img_name = standardizer_subset.image_list[7].split('/')[3].split('.')[0]
+    bin_image = standardizer_subset.binarized_images[8]
+    grey_image = standardizer_subset.greyscale_image_list[8]
+    img_name = standardizer_subset.image_list[8].split('/')[3].split('.')[0]
     print(img_name)
     arr = np.array(grey_image)
     first10_flat = arr[:10, :].flatten()
