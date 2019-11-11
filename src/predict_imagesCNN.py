@@ -91,8 +91,8 @@ class LineScrubber(object):
             self.gray_image[i+15, j+15] = self.whitespace ## mean of whitespace
             print('pixel changed')
 
-    def save_fig(self, path):
-        plt.imsave(path, self.gray_image,  cmap='gray')
+    def save_fig(self):
+        plt.imsave(self.figname, self.gray_image,  cmap='gray')
 
     def scrub(self, size=30):
         gray = self.gray_image
