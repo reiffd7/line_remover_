@@ -31,6 +31,15 @@ sys.path.append(ROOT_DIRECTORY)
 
 class LineScrubber(object):
 
+    '''
+    The class is fed a binarized and grayscale image corresponding to the same original image,
+    a prediction threshold, a whitespace pixel intensity value (grayscale), a classification model path (to be pickled),
+    and a figure name. With this information, we iterate through dark pixels (whitespace - 10), collect 
+    associated features, and make a prediction based on the loaded model. If the prediction is a line,
+    the grayscale image pixel value becomes the whitespace pixel intensity value. Before and after images 
+    are saved. 
+    '''
+
     def __init__(self, bin_image, gray_image, threshold, whitespace, model_path, figname):
         self.bin_image = bin_image.copy()
         self.gray_image = gray_image.copy()
@@ -102,7 +111,7 @@ class LineScrubber(object):
     def scrub(self, size=30):
         gray = self.gray_image
         binar = self.bin_image
-        visit_list = np.argwhere(gray <= (self.whitespace - 20))
+        visit_list = np.argwhere(gray <= (self.whitespace - 10))
         last_3 = [-1, -1, -1]
         # self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
         for x in visit_list:

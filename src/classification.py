@@ -22,6 +22,15 @@ import seaborn as sns
 
 
 class Classifiers(object):
+    '''
+    This class takes in an instantiated sklearn or xgboost classification model, with or without 
+    specified parameters. It also takes in a distribution of parameters in dictionary form. You can 
+    use this class to either search for the best parameters from the distribution or fit, predict, etc. 
+    with the original instantiated model. Other than fit/predict, this class can plot feature importances,
+    find cross-validated performance metrics, plot a ROC curve, produce a confusion matrix. Other model specific
+    features include plotting a stage score plot and feature dependence.
+
+    '''
 
 
     def __init__(self, model, param_dist):

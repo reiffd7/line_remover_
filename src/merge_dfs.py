@@ -10,7 +10,11 @@ DATA_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'data')
 CLASSIFICATION_DIRECTORY = os.path.join(DATA_DIRECTORY, 'classification')
 sys.path.append(ROOT_DIRECTORY)
 
+
 def merge(all_files):
+    '''
+    This function takes in a list of csv files and merges them all into one DataFrame
+    '''
     li = []
 
     for filename in all_files:

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np 
 import os
 import sys
-from modeling import Classifiers
+from classification import Classifiers
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier, RandomForestClassifier
@@ -28,6 +28,12 @@ sys.path.append(ROOT_DIRECTORY)
 
 
 class prepareDF(object):
+
+    '''
+    This class takes in a DataFrame. The DatFrame is featurized  and split into
+    test and train sets. Attributes include X, y, feature_names, X_train, X_test,
+    y_train, and y_test
+    '''
 
     def __init__(self, df, status_quo):
         self.df = df

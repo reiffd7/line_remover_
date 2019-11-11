@@ -20,6 +20,13 @@ sys.path.append(ROOT_DIRECTORY)
 
 
 class LineScrubber(object):
+    '''
+    The class is fed a grayscale image, a prediction threshold, a whitespace pixel intensity value (grayscale), 
+    a CNN model path (to be loaded), and a figure name. With this information, we iterate through dark pixels (whitespace - 10), 
+    and make a prediction with the loaded model based on the 30x30 array of pixels surrounding the dark pixel at each iteration. 
+    If the prediction is a line, the grayscale image pixel value becomes the whitespace pixel intensity value. Before and after images 
+    are saved. 
+    '''
 
     def __init__(self, gray_image, threshold, whitespace, model_path, figname):
         self.gray_image = gray_image.copy()

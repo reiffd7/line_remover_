@@ -57,8 +57,8 @@ class imageCNN(object):
 
     def load_and_featurize_data(self):
         '''
-        Each directory is accessed, and we create generators that resize
-        our images to 30x30
+        Each directory is accessed, and we create generators that rescale each image. Setting color mode to grayscale
+        reshapes each image array to (30, 30, 1) from (30, 30, 4)
         '''
         train_datagen = ImageDataGenerator(rescale=1./255)
         test_datagen = ImageDataGenerator(rescale=1./255)
@@ -92,7 +92,7 @@ class imageCNN(object):
     def define_model(self, dropout=0.25, num_blocks=1):
         '''
         This function defines the structure of the model. It specifies
-        that four convolution layers will be added with a pooling layer in between
+        that six convolution layers will be added with a pooling layer in between
         and at the end. Following convolution/pooling, we flatten the images and use a 
         sigmoid activation function to makde a prediction.
         '''

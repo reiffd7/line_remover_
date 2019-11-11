@@ -25,6 +25,13 @@ sys.path.append(ROOT_DIRECTORY)
 
 
 class ImageGenerator(object):
+    '''
+    This class takes in a binarized image and grayscale image corresponding to the same original image. 
+    It has the capability to create a padded image corrersponding to the binarized image and grayscale images.
+    Its main function is to iterate through a row of the original image in 30x30 frames and allow the user to 
+    classify each frame as a line or a drawing. Upon classification, frames are saved in binary and gray 
+    directories and features are gathered and put into a DataFrame. 
+    '''
 
     def __init__(self, bin_image, gray_image, name):
         self.bin_image = bin_image
