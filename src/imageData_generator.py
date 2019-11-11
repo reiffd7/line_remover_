@@ -124,28 +124,27 @@ class ImageGenerator(object):
         gray = self.gray_padded_image
         binar = self.bin_padded_image
         self.my_dict = {'gray_pixel_value': [], 'mean_gray_pixel_value': [], 'bin_percentage_colored': [], 'sobel_gradient': [], 'label': []}
-        for r in range(30, 220):
-            row_idx = r
-            for c in range(230, 255):
-                col_idx = c
-                self.plot_frame(gray, row_idx, col_idx, size)
-                self.plot_frame(binar, row_idx, col_idx, size)
-                plt.show()
-                gray_window = self.gray_padded_image[row_idx:row_idx+size, col_idx:col_idx+size]
-                bin_window = self.bin_padded_image[row_idx:row_idx+size, col_idx:col_idx+size]
-                gray_pixel_value = gray_window[15, 15]
-                bin_pixel_value = bin_window[15, 15]
-                mean_pixel_value = np.mean(gray_window)
-                gray_window_sobel = ndimage.sobel(gray_window, axis=0)
-                colored_percentage = np.count_nonzero(bin_window==0)/(30**2)
-                above_area = np.mean(gray_window_sobel[8:16, 15])
-                below_area = np.mean(gray_window_sobel[16:23, 15])
-                sobel_gradient = above_area - -below_area
-                if bin_pixel_value == 0.0:
-                    label = self.get_label()
-                    self.update_dict(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, label)
-                    self.save_imgs(label, gray_window, bin_window, row_idx, col_idx)
-                    print(label)
+        row_idx = row
+        for c in range(400):
+            col_idx = c
+            self.plot_frame(gray, row_idx, col_idx, size)
+            self.plot_frame(binar, row_idx, col_idx, size)
+            plt.show()
+            gray_window = self.gray_padded_image[row_idx:row_idx+size, col_idx:col_idx+size]
+            bin_window = self.bin_padded_image[row_idx:row_idx+size, col_idx:col_idx+size]
+            gray_pixel_value = gray_window[15, 15]
+            bin_pixel_value = bin_window[15, 15]
+            mean_pixel_value = np.mean(gray_window)
+            gray_window_sobel = ndimage.sobel(gray_window, axis=0)
+            colored_percentage = np.count_nonzero(bin_window==0)/(30**2)
+            above_area = np.mean(gray_window_sobel[8:16, 15])
+            below_area = np.mean(gray_window_sobel[16:23, 15])
+            sobel_gradient = above_area - -below_area
+            if bin_pixel_value == 0.0:
+                label = self.get_label()
+                self.update_dict(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, label)
+                self.save_imgs(label, gray_window, bin_window, row_idx, col_idx)
+                print(label)
 
 
         self.df = pd.DataFrame.from_dict(self.my_dict)

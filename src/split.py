@@ -15,6 +15,6 @@ sys.path.append(ROOT_DIRECTORY)
 
 
 
-# if __name__ == '__main__':
-#     split_folders.ratio(BINARY_STASH, output=os.path.join(ROOT_DIRECTORY, 'data/gray/split'), seed=1337, ratio=(.8, .1, .1))
+if __name__ == '__main__':
+    split_folders.ratio(GRAY_STASH, output=os.path.join(ROOT_DIRECTORY, 'data/gray/split2'), seed=1337, ratio=(.8, .1, .1))
 

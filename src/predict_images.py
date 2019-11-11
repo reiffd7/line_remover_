@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("tkagg")
 import matplotlib.pyplot as plt
-import glob
+# import glob
 from skimage import io, color, filters, feature, restoration
 from skimage.transform import resize, rotate
 from skimage.color import rgb2gray
@@ -131,38 +131,38 @@ class LineScrubber(object):
 
 
 if __name__ == '__main__':
-    print('Loading model')
-    model_path = '../models/models/xg_boost.sav'
-    # model = pickle.load(open(model_path, 'rb'))
+    # print('Loading model')
+    # model_path = '../models/models/xg_boost.sav'
+    # # model = pickle.load(open(model_path, 'rb'))
 
-    print('Loading resized images')
-    resized_imgs = glob.glob('../data/medium/*')
+    # print('Loading resized images')
+    # resized_imgs = glob.glob('../data/medium/*')
 
-    print('Subset the images that we want, the ones we trained the model on')
-    img_list = [164, 202, 425, 345, 139, 72, 311, 363, 403, 509, 362, 257, 175, 203, 47, 183, 0, 297, 34, 8, 320, 197, 293, 450, 215, 28, 74]
-    img_subset = []
-    for img in resized_imgs:
-        img_idx = int(img.split('/')[3].split('_')[0])
-        if img_idx in img_list:
-            img_subset.append(img)
+    # print('Subset the images that we want, the ones we trained the model on')
+    # img_list = [164, 202, 425, 345, 139, 72, 311, 363, 403, 509, 362, 257, 175, 203, 47, 183, 0, 297, 34, 8, 320, 197, 293, 450, 215, 28, 74]
+    # img_subset = []
+    # for img in resized_imgs:
+    #     img_idx = int(img.split('/')[3].split('_')[0])
+    #     if img_idx in img_list:
+    #         img_subset.append(img)
 
-    print('Standardize the images')
-    standardizer_subset = Standardizer(img_subset, resized_imgs[3])
+    # print('Standardize the images')
+    # standardizer_subset = Standardizer(img_subset, resized_imgs[3])
 
-    print('Select the image we want to scrub')
-    bin_image = standardizer_subset.binarized_images[3]
-    grey_image = standardizer_subset.greyscale_image_list[3]
-    img_name = standardizer_subset.image_list[3].split('/')[3].split('.')[0]
-    m_name = 'XG_Boost'
-    thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+    # print('Select the image we want to scrub')
+    # bin_image = standardizer_subset.binarized_images[3]
+    # grey_image = standardizer_subset.greyscale_image_list[3]
+    # img_name = standardizer_subset.image_list[3].split('/')[3].split('.')[0]
+    # m_name = 'XG_Boost'
+    # thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
 
 
-    print('Ready to scrub')
-    images = ImageGenerator(bin_image, grey_image, img_name)
-    images.pad(15, 237.4)
-    gray = images.gray_padded_image
-    binar = images.bin_padded_image
+    # print('Ready to scrub')
+    # images = ImageGenerator(bin_image, grey_image, img_name)
+    # images.pad(15, 237.4)
+    # gray = images.gray_padded_image
+    # binar = images.bin_padded_image
 
     
-    scrubber = LineScrubber(binar, gray, 0.55, 237.4, model_path, '{}_{}_{}_test'.format(img_name, m_name, 0.55))
+    # scrubber = LineScrubber(binar, gray, 0.55, 237.4, model_path, '{}_{}_{}_test'.format(img_name, m_name, 0.55))
 
