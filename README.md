@@ -14,6 +14,8 @@ A project using CNNs to remove ruled lines from sketches
 5. [CNN Results](#cnn-results)
 6. [Picture Scrubbing](#picture-scrubbing)
 7. [Results](#results)
+7. [Comparison](#comparison)
+8. [App](#app)
 8. [Further Work](#further-work)
 10. [Sources](#sources)
 
@@ -78,7 +80,7 @@ I found a new strategy from a paper that showed how it was possible to remove st
 
 ## The Pipeline
 
-![pipeline](/presentation_imgs/pipeline.png) 
+![pipeline](/presentation_imgs/Line_Remover.png) 
 
 From a directory of standardized ruled sailboat drawings, we classify thousands of 30x30 frames and split them into train and test directories. The CNN is trained and tested using these directories. Finally, we take a standardized sailboat drawing to be scrubbed. The drawing is divided into 30x30 frames. We predict whether or not each frame is a line or a drawing frame. The lines frames are removed. The result is a scrubbed sailboat drawing.
 
@@ -178,4 +180,47 @@ This step is extremely computational expensive. To cut down on cost, I adopted a
 
  ## Results
 
- 
+| Before           | After  |
+|---------------------|---------|
+| ![r1_A](/presentation_imgs/r1_B.png)             | ![r1_B](/presentation_imgs/r1_A.png)     |
+| ![r2_B](/presentation_imgs/r2_B.png)           | ![r1_A](/presentation_imgs/r2_A.png)       |
+| ![r1_A](/presentation_imgs/r3_B.png)          | ![r1_A](/presentation_imgs/r3_A.png)  |
+| ![r1_A](/presentation_imgs/r4_B.png)              | ![r1_A](/presentation_imgs/r4_A.png)       |
+
+
+
+## Comparison
+
+![comparison](/presentation_imgs/comparison.png) 
+
+The CNN appears to work better to other line removal strategies. 
+
+<li> The Fourier Transfrom strategy looks at the image in FT space where you can only see lines due to their frequency. Lines are removed in FT space. This strategy appears to need extremely consistent lines and more filtering or pieces of lines will remain
+
+<li> For the Random Forest model to work, each frame is featurized by flattening 30x30 frames to a vector of length of 900. The Random Forest removes lines well but completely destorys the integrity of the drawing
+
+
+## App
+
+![app](/presentation_imgs/home_screen.png) 
+![cnn](/presentation_imgs/preview.png) 
+![cnn](/presentation_imgs/scrub.png) 
+
+## Further Work
+
+**More Data**
+<li> The Model performs beautifully on my results, however it does not work on every sailboat or any drawing on ruled paper</li>
+<li> The Model needs to be trained on thousands more frames of lines and drawings to be deployable in an app </li>
+
+
+**Multiprocessing**
+<li> As it is now, the app can scrub an image in around 1 minute and 10 seconds</li>
+<li> To further speed this up, I will need to utilize multiprocessing</li>
+<li> Instead of visiting only dark pixels, I will have to visit all pixels, but do this in parallel</li> 
+<li>Assign rows to different cores using multiprocessing</li>
+
+**Colorizing**
+<li> I converted theses drawings to grayscale which was OK for this project because most sketches were done in pencil</li>
+<li> But for this to be deployable on a wider scale, I want to colorize grayscale images if the original sketches were done in color</li>
+<li> Colorization could also be utilized to create art from pencil sketches </li>
+<li> GANs could be utilized to capture the styles of similar paintings/pictures </li>
