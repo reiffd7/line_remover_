@@ -101,7 +101,7 @@ As you can see, lines tend to be very similar no matter what drawing they are sa
 
 ## CNN Architecture
 
-![cnn](/presentation_imgs/cnn.png) 
+![cnn](/presentation_imgs/CNN.png) 
 
 CNN architecture was determined through a process of trial and error. I would create a model, scrub an image, and look at the results hoping to maximize line removal and drawing preservation. 
 
