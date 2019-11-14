@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np 
 import os
 import sys
-from classification import Classifiers
+# from classification import Classifiers
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier, RandomForestClassifier
@@ -60,50 +60,50 @@ class prepareDF(object):
 
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    ## Data Prep
-    data_path = os.path.join(CLASSIFICATION_DIRECTORY, 'result.csv')
-    df = pd.read_csv(data_path, index_col=0)
-
-
-    prepare = prepareDF(df, False)
-    # prepare.test_train_split(0.33)
-
-    feature_names = prepare.feature_names
-    X_train, X_test, y_train, y_test = prepare.X_train, prepare.X_test, prepare.y_train, prepare.y_test
-    print(feature_names)
-    print('Done preparing. About to run models ...')
-    ## Run Models
-
-    # y_train = y_train.astype(float)
-    # X_train = X_train.astype(float)
-    param_dist = {"booster": ["gbtree", "gblinear"],
-              "eta": np.linspace(0, 1, 9),
-              "subsample": np.linspace(0.5, 1, 5),
-              "max_depth": np.arange(3, 10),
-              "colsample_bytree": np.linspace(0.5, 1, 5),
-              "lambda": np.linspace(0, 1, 9),
-              "alpha": np.linspace(0, 1, 9),
-              "objective": ['binary:logistic'],
-              "eval_metric": ['rmse', 'mae', 'error']}
-
-    # rf_best_params = {'bootstrap': False, 'criterion': 'gini', 'max_depth': None, 'max_features': 1, 'min_samples_split': 7, 'n_estimators': 75}
-    xgb_best_params = {'subsample': 0.5, 'objective': 'binary:logistic', 'max_depth': 7, 'lambda': 0.125, 'eval_metric': 'error', 'eta': 0.25, 'colsample_bytree': 0.875, 'booster': 'gbtree', 'alpha': 1.0}
-    xgb_model = Classifiers(xgb.XGBClassifier(**xgb_best_params), param_dist)
-    xgb_model.fit(X_train, y_train)
-    xgb_model.predict(X_test)
-    print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, xgb_model.y_pred), precision_score(y_test, xgb_model.y_pred), recall_score(y_test, xgb_model.y_pred)))
-
-    # log_model = Classifiers(LogisticRegression(), param_dist)
-    # log_model.fit(X_train, y_train)
-
-    # log_model.predict(X_test)
-    # print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, log_model.y_pred), precision_score(y_test, log_model.y_pred), recall_score(y_test, log_model.y_pred)))
+#     ## Data Prep
+#     data_path = os.path.join(CLASSIFICATION_DIRECTORY, 'result.csv')
+#     df = pd.read_csv(data_path, index_col=0)
 
 
-    filename = os.path.join(MODELS_DIRECTORY, 'xg_boost_no_bincolored.sav')
-    pickle.dump(xgb_model.model, open(filename, 'wb'))
+#     prepare = prepareDF(df, False)
+#     # prepare.test_train_split(0.33)
+
+#     feature_names = prepare.feature_names
+#     X_train, X_test, y_train, y_test = prepare.X_train, prepare.X_test, prepare.y_train, prepare.y_test
+#     print(feature_names)
+#     print('Done preparing. About to run models ...')
+#     ## Run Models
+
+#     # y_train = y_train.astype(float)
+#     # X_train = X_train.astype(float)
+#     param_dist = {"booster": ["gbtree", "gblinear"],
+#               "eta": np.linspace(0, 1, 9),
+#               "subsample": np.linspace(0.5, 1, 5),
+#               "max_depth": np.arange(3, 10),
+#               "colsample_bytree": np.linspace(0.5, 1, 5),
+#               "lambda": np.linspace(0, 1, 9),
+#               "alpha": np.linspace(0, 1, 9),
+#               "objective": ['binary:logistic'],
+#               "eval_metric": ['rmse', 'mae', 'error']}
+
+#     # rf_best_params = {'bootstrap': False, 'criterion': 'gini', 'max_depth': None, 'max_features': 1, 'min_samples_split': 7, 'n_estimators': 75}
+#     xgb_best_params = {'subsample': 0.5, 'objective': 'binary:logistic', 'max_depth': 7, 'lambda': 0.125, 'eval_metric': 'error', 'eta': 0.25, 'colsample_bytree': 0.875, 'booster': 'gbtree', 'alpha': 1.0}
+#     xgb_model = Classifiers(xgb.XGBClassifier(**xgb_best_params), param_dist)
+#     xgb_model.fit(X_train, y_train)
+#     xgb_model.predict(X_test)
+#     print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, xgb_model.y_pred), precision_score(y_test, xgb_model.y_pred), recall_score(y_test, xgb_model.y_pred)))
+
+#     # log_model = Classifiers(LogisticRegression(), param_dist)
+#     # log_model.fit(X_train, y_train)
+
+#     # log_model.predict(X_test)
+#     # print("Accuracy: {}, Precision: {}, Recall: {}".format(accuracy_score(y_test, log_model.y_pred), precision_score(y_test, log_model.y_pred), recall_score(y_test, log_model.y_pred)))
+
+
+#     filename = os.path.join(MODELS_DIRECTORY, 'xg_boost_no_bincolored.sav')
+#     pickle.dump(xgb_model.model, open(filename, 'wb'))
 
 
 

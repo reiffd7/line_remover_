@@ -108,6 +108,11 @@ Sketches/
 # mkdocs documentation
 /site
 
+src/predict_images.py
+src/predict_imagesCNN.py
+
+.gitignore
+
 
 # mypy
 .mypy_cache/

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("tkagg")
 import matplotlib.pyplot as plt
-# import glob
+import glob
 from skimage import io, color, filters, feature, restoration
 from skimage.transform import resize, rotate
 from skimage.color import rgb2gray
@@ -13,8 +13,8 @@ import matplotlib.cm as cm
 from scipy import ndimage, misc
 import pickle
 # import modeling
-# from standardizer import Standardizer
-# from imageData_generator import ImageGenerator
+from standardizer import Standardizer
+from imageData_generator import ImageGenerator
 import os
 import sys
 this_file = os.path.realpath(__file__)
@@ -40,8 +40,7 @@ class LineScrubber(object):
     are saved. 
     '''
 
-    def __init__(self, bin_image, gray_image, threshold, whitespace, model_path, figname):
-        self.bin_image = bin_image.copy()
+    def __init__(self, gray_image, threshold, whitespace, model_path, figname):
         self.gray_image = gray_image.copy()
         self.img_rows = gray_image.shape[0]
         self.img_cols = gray_image.shape[1]
@@ -86,18 +85,9 @@ class LineScrubber(object):
         ax[2].imshow(masked_pixel1, cmap='jet')
         ax[2].imshow(masked_pixel, cmap='prism', interpolation='none')
 
-    def predict(self, gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3):
-        normalized_pixel_val = ((self.whitespace - gray_pixel_value)/self.whitespace)
-        normalized_mean_pixel_val = ((self.whitespace - mean_pixel_value)/self.whitespace)
-        X = np.array([[gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3[0], last_3[1], last_3[2], normalized_pixel_val, normalized_mean_pixel_val]])
-        X = X.reshape((1, -1))
-        # print(X.shape)
-        prob = self.model.predict_proba(X)[0][1]
-        print(prob)
-        if prob >= self.threshold:
-            prediction = 1
-        else:
-            prediction = 0
+    def predict(self, gray_window):
+        x = gray_window.flatten().reshape(1, -1)
+        prediction = self.model.predict(x)[0]
         return prediction
 
     def alter_image(self, i, j, prediction):
@@ -110,9 +100,9 @@ class LineScrubber(object):
 
     def scrub(self, size=30):
         gray = self.gray_image
-        binar = self.bin_image
+        # binar = self.bin_image
         visit_list = np.argwhere(gray <= (self.whitespace - 10))
-        last_3 = [-1, -1, -1]
+        # last_3 = [-1, -1, -1]
         # self.save_fig(os.path.join(RESULTS_DIRECTORY, '{}_before.png'.format(self.figname)))
         for x in visit_list:
             i = x[0]-15
@@ -122,56 +112,62 @@ class LineScrubber(object):
             # self.plot_frame(binar, i, j, size)
             # plt.show()
             gray_window = gray[i:i+size, j:j+size]
-            bin_window = binar[i:i+size, j:j+size]
-            gray_window_sobel = ndimage.sobel(gray_window, axis=0)
-            mean_pixel_value = np.mean(gray_window)
-            gray_pixel_value = gray_window[15, 15]
-            colored_percentage = np.count_nonzero(bin_window==0)/(30**2)
-            above_area = np.mean(gray_window_sobel[8:16, 15])
-            below_area = np.mean(gray_window_sobel[16:23, 15])
-            sobel_gradient = above_area - -below_area
+            # bin_window = binar[i:i+size, j:j+size]
+            # gray_window_sobel = ndimage.sobel(gray_window, axis=0)
+            # mean_pixel_value = np.mean(gray_window)
+            # gray_pixel_value = gray_window[15, 15]
+            # colored_percentage = np.count_nonzero(bin_window==0)/(30**2)
+            # above_area = np.mean(gray_window_sobel[8:16, 15])
+            # below_area = np.mean(gray_window_sobel[16:23, 15])
+            # sobel_gradient = above_area - -below_area
             # print('Pix Val: {}, Mean Pix Val: {}, Bin Colored: {}, Sobel Gradient: {}, Last 3: {}'.format(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3))
-            prediction = self.predict(gray_pixel_value, mean_pixel_value, colored_percentage, sobel_gradient, last_3)
+            prediction = self.predict(gray_window)
             print(prediction)
             self.alter_image(i, j, prediction)
-            last_3.pop()
-            last_3.insert(0, prediction)
+            # last_3.pop()
+            # last_3.insert(0, prediction)
         self.save_fig()
 
 
 if __name__ == '__main__':
-    # print('Loading model')
-    # model_path = '../models/models/xg_boost.sav'
-    # # model = pickle.load(open(model_path, 'rb'))
+    print('Loading model')
+    model_path = '../models/models/rf_model_flat.sav'
+    # model = pickle.load(open(model_path, 'rb'))
 
-    # print('Loading resized images')
-    # resized_imgs = glob.glob('../data/medium/*')
+    print('Loading resized images')
+    resized_imgs = glob.glob('../data/medium/*')
 
-    # print('Subset the images that we want, the ones we trained the model on')
-    # img_list = [164, 202, 425, 345, 139, 72, 311, 363, 403, 509, 362, 257, 175, 203, 47, 183, 0, 297, 34, 8, 320, 197, 293, 450, 215, 28, 74]
-    # img_subset = []
-    # for img in resized_imgs:
-    #     img_idx = int(img.split('/')[3].split('_')[0])
-    #     if img_idx in img_list:
-    #         img_subset.append(img)
+    print('Subset the images that we want, the ones we trained the model on')
+    img_list = [164, 202, 425, 345, 139, 72, 311, 363, 403, 509, 362, 257, 175, 203, 47, 183, 0, 297, 34, 8, 320, 197, 293, 450, 215, 28, 74]
+    img_subset = []
+    for img in resized_imgs:
+        img_idx = int(img.split('/')[3].split('_')[0])
+        if img_idx in img_list:
+            img_subset.append(img)
 
-    # print('Standardize the images')
-    # standardizer_subset = Standardizer(img_subset, resized_imgs[3])
+    print('Standardize the images')
+    standardizer_subset = Standardizer(img_subset, resized_imgs[3])
 
-    # print('Select the image we want to scrub')
-    # bin_image = standardizer_subset.binarized_images[3]
-    # grey_image = standardizer_subset.greyscale_image_list[3]
-    # img_name = standardizer_subset.image_list[3].split('/')[3].split('.')[0]
-    # m_name = 'XG_Boost'
+    # print(standardizer_subset.image_list)
+    print('Select the image we want to scrub')
+    bin_image = standardizer_subset.binarized_images[20]
+    grey_image = standardizer_subset.greyscale_image_list[20]
+    img_name = standardizer_subset.image_list[20].split('/')[3].split('.')[0]
+    m_name = 'RF_Model_FLAT'
+    arr = np.array(grey_image)
+    first10_flat = arr[:10, :].flatten()
+    n, bins, patches = plt.hist(first10_flat, bins=30)
+    bin_max = np.where(n == n.max())
+    whitespace = bins[bin_max][0]
     # thresholds = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
 
 
-    # print('Ready to scrub')
-    # images = ImageGenerator(bin_image, grey_image, img_name)
-    # images.pad(15, 237.4)
-    # gray = images.gray_padded_image
+    print('Ready to scrub')
+    images = ImageGenerator(bin_image, grey_image, img_name)
+    images.pad(15, whitespace)
+    gray = images.gray_padded_image
     # binar = images.bin_padded_image
 
     
-    # scrubber = LineScrubber(binar, gray, 0.55, 237.4, model_path, '{}_{}_{}_test'.format(img_name, m_name, 0.55))
+    scrubber = LineScrubber(gray, 0.55, whitespace, model_path, os.path.join(RESULTS_DIRECTORY, '{}_{}.png'.format(img_name, m_name)))
 

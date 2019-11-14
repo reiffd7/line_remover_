@@ -27,9 +27,9 @@ class Standardizer(object):
         self.greyscale(400)
         self.standardize()
         self.binarize(0.85)
-        # self.greyscale_one()
-        # self.standardize_one()
-        # self.binarize_one(0.85)
+        self.greyscale_one()
+        self.standardize_one()
+        self.binarize_one(0.85)
 
 
     def greyscale(self, n):
